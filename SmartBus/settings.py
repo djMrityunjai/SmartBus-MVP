@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     "accounts",
     "schools",
     "common",
+    "vehicles",
+    "trips",
 ]
 
 MIDDLEWARE = [
