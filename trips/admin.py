@@ -5,14 +5,14 @@ from .models import Trip, TripStudent, TripLocation, TripEvent
 
 @admin.register(Trip)
 class TripAdmin(admin.ModelAdmin):
-    list_display = ('school', 'route', 'bus', 'driver', 'trip_type', 'status', 'scheduled_start_time')
+    list_display = ('route', 'bus', 'driver', 'trip_type', 'status', 'scheduled_start_time', 'school')
     list_filter = ('trip_type', 'status', 'school')
     search_fields = ('bus__registration_number', 'route__name', 'driver__user__first_name')
     date_hierarchy = 'scheduled_start_time'
     
     fieldsets = (
         ('Basic Information', {
-            'fields': ('school', 'route', 'bus', 'driver', 'trip_type', 'status')
+            'fields': ('route', 'bus', 'driver', 'trip_type', 'status', 'school')
         }),
         ('Schedule', {
             'fields': ('scheduled_start_time', 'scheduled_end_time')

@@ -67,9 +67,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
-    
+
     def __str__(self):
-        return self.email if self.email else self.phone
+        return (self.first_name + ' ' + self.last_name)
     
     def get_full_name(self):
         """Returns the user's full name or identifier"""

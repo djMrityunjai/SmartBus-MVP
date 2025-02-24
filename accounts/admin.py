@@ -44,9 +44,32 @@ class ProfileAdmin(admin.ModelAdmin):
 
 @admin.register(Parent)
 class ParentAdmin(admin.ModelAdmin):
-    list_display = ('user', 'get_children_count', 'occupation', 'emergency_contact')
-    list_filter = ('user__user_type',)
-    search_fields = ('user__email', 'user__phone', 'user__first_name', 'user__last_name')
+    list_display = ('user', 'get_parent_name', 'get_phone', 'occupation', 'get_children_count')
+    list_filter = ('user__user_type', 'preferred_language')
+    search_fields = ('user__email', 'user__phone', 'user__first_name', 'user__last_name', 'occupation')
+    
+    fieldsets = (
+        ('User Information', {
+            'fields': ('user',)
+        }),
+        ('Professional Information', {
+            'fields': ('occupation', 'work_address')
+        }),
+        ('Contact Information', {
+            'fields': ('emergency_contact', 'preferred_language')
+        }),
+        ('Address Information', {
+            'fields': ('address', 'city', 'state', 'zip_code', 'latitude', 'longitude')
+        }),
+    )
+    
+    def get_parent_name(self, obj):
+        return f"{obj.user.first_name} {obj.user.last_name}"
+    get_parent_name.short_description = 'Name'
+    
+    def get_phone(self, obj):
+        return obj.user.phone
+    get_phone.short_description = 'Phone'
     
     def get_children_count(self, obj):
         return obj.children.count()

@@ -105,39 +105,39 @@ class Command(BaseCommand):
         try:
             with transaction.atomic():
                 # Get unique guardian phone numbers from students without parents
-                # guardian_phones = Student.objects.filter(
-                #     parent__isnull=True
-                # ).values('guardian_phone').annotate(
-                #     student_count=Count('id')
-                # ).order_by('-student_count')  # Prioritize guardians with more students
+                guardian_phones = Student.objects.filter(
+                    parent__isnull=True
+                ).values('guardian_phone').annotate(
+                    student_count=Count('id')
+                ).order_by('-student_count')  # Prioritize guardians with more students
                 
-                # total_guardians = len(guardian_phones)
-                # num_parents_to_create = int(total_guardians * parents_percent / 100)
+                total_guardians = len(guardian_phones)
+                num_parents_to_create = int(total_guardians * parents_percent / 100)
                 
-                # self.stdout.write(f'Creating parents for {num_parents_to_create} out of {total_guardians} guardians...')
+                self.stdout.write(f'Creating parents for {num_parents_to_create} out of {total_guardians} guardians...')
                 
-                # parents_created = 0
-                # for guardian in guardian_phones[:num_parents_to_create]:
-                #     phone = guardian['guardian_phone']
-                #     # Get first student for this guardian
-                #     student = Student.objects.filter(guardian_phone=phone, parent__isnull=True).first()
-                #     if student:
-                #         parent = self.create_parent_from_guardian(phone, student)
-                #         if parent:
-                #             parents_created += 1
-                #             self.stdout.write(f'Created parent: {parent} with phone: {phone}')
+                parents_created = 0
+                for guardian in guardian_phones[:num_parents_to_create]:
+                    phone = guardian['guardian_phone']
+                    # Get first student for this guardian
+                    student = Student.objects.filter(guardian_phone=phone, parent__isnull=True).first()
+                    if student:
+                        parent = self.create_parent_from_guardian(phone, student)
+                        if parent:
+                            parents_created += 1
+                            self.stdout.write(f'Created parent: {parent} with phone: {phone}')
                 
                 # # Create drivers for each school
-                self.stdout.write(f'Creating {num_drivers} drivers...')
-                schools = list(School.objects.all())
-                if not schools:
-                    self.stdout.write('No schools found. Please run generate_sample_schools first.')
-                    return
+                # self.stdout.write(f'Creating {num_drivers} drivers...')
+                # schools = list(School.objects.all())
+                # if not schools:
+                #     self.stdout.write('No schools found. Please run generate_sample_schools first.')
+                #     return
                 
-                for _ in range(num_drivers):
-                    school = random.choice(schools)
-                    driver = self.create_driver(school)
-                    self.stdout.write(f'Created driver: {driver} for school: {school}')
+                # for _ in range(num_drivers):
+                #     school = random.choice(schools)
+                #     driver = self.create_driver(school)
+                #     self.stdout.write(f'Created driver: {driver} for school: {school}')
                 
             self.stdout.write(self.style.SUCCESS(
                 f'Successfully generated {parents_created} parents and {num_drivers} drivers'
