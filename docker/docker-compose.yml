@@ -1,0 +1,23 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: dfm_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: dfm
+      POSTGRES_PASSWORD: dfm
+      POSTGRES_DB: dfm
+    ports:
+      - "5434:5432"
+    volumes:
+      - dfm_pgdata:/var/lib/postgresql/data
+
+volumes:
+  dfm_pgdata:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${PWD}/pgdata
+      o: bind
