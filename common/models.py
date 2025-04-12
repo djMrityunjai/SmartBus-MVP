@@ -42,13 +42,28 @@ class BaseMixin(models.Model):
             
         super().save(*args, **kwargs)
 
-class AddressMixin(models.Model):
+class LocationMixin(models.Model):
+    """
+    A mixin for models that need to store geographic coordinates.
+    This can be used for any model that needs to track location.
+    """
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+
+    class Meta:
+        abstract = True
+        
+    def get_coordinates(self):
+        """Return coordinates as a tuple if both values are present"""
+        if self.latitude is not None and self.longitude is not None:
+            return (self.latitude, self.longitude)
+        return None
+
+class AddressMixin(LocationMixin):
     address = models.TextField(blank=True)
     city = models.CharField(max_length=100, blank=True)
     state = models.CharField(max_length=100, blank=True)
     zip_code = models.CharField(max_length=10, blank=True)
-    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
-    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
 
     class Meta:
         abstract = True

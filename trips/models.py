@@ -1,8 +1,8 @@
 # trips/models.py
 from django.db import models
-from common.models import BaseMixin
+from common.models import BaseMixin, LocationMixin
 from vehicles.models import Bus
-from accounts.models import Driver
+from accounts.models import Driver, User
 from schools.models import Route, RouteStudent, School
 from django.core.exceptions import ValidationError
 
@@ -60,6 +60,7 @@ class TripStudent(BaseMixin):
     scheduled_time = models.DateTimeField()
     actual_time = models.DateTimeField(null=True, blank=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='SCHEDULED')
+    reported_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     
     class Meta:
         ordering = ['route_student__sequence_number']
@@ -71,10 +72,8 @@ class TripStudent(BaseMixin):
         if self.route_student.route != self.trip.route:
             raise ValidationError("Student must belong to the trip's route")
 
-class TripLocation(BaseMixin):
+class TripLocation(BaseMixin, LocationMixin):
     trip = models.ForeignKey(Trip, on_delete=models.CASCADE, related_name='locations')
-    latitude = models.DecimalField(max_digits=9, decimal_places=6)
-    longitude = models.DecimalField(max_digits=9, decimal_places=6)
     timestamp = models.DateTimeField(auto_now_add=True)
     speed = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)  # in km/h
     
@@ -84,7 +83,7 @@ class TripLocation(BaseMixin):
     def __str__(self):
         return f"{self.trip} - {self.timestamp}"
 
-class TripEvent(BaseMixin):
+class TripEvent(BaseMixin, LocationMixin):
     EVENT_TYPES = [
         ('START', 'Trip Started'),
         ('END', 'Trip Ended'),
@@ -100,8 +99,6 @@ class TripEvent(BaseMixin):
     event_type = models.CharField(max_length=20, choices=EVENT_TYPES)
     timestamp = models.DateTimeField(auto_now_add=True)
     description = models.TextField()
-    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
-    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     
     class Meta:
         ordering = ['-timestamp']
